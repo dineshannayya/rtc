@@ -115,20 +115,20 @@ logic [31:0] cfg_date         ;
 //----------------------------------------
 
 //input logic             inc_time_s      ; // increment second
-input logic             inc_time_ts     ; // increment tenth second
-input logic             inc_time_m      ; // increment minute
-input logic             inc_time_tm     ; // increment tenth minute
-input logic             inc_time_h      ; // increment hour
-input logic             inc_time_th     ; // increment tenth hour
-input logic             inc_time_dow    ; // increment date of week
-//input logic             inc_date_d      ; // increment date
-input logic             inc_date_td     ; // increment tenth date
-input logic             inc_date_m      ; // increment month
-input logic             inc_date_tm     ; // increment tength month
-input logic             inc_date_y      ; // increment year
-input logic             inc_date_ty     ; // increment tenth year
-input logic             inc_date_c      ; // increment century
-input logic             inc_date_tc     ; // increment tenth century
+logic             inc_time_ts     ; // increment tenth second
+logic             inc_time_m      ; // increment minute
+logic             inc_time_tm     ; // increment tenth minute
+logic             inc_time_h      ; // increment hour
+logic             inc_time_th     ; // increment tenth hour
+logic             inc_time_dow    ; // increment date of week
+//logic             inc_date_d      ; // increment date
+logic             inc_date_td     ; // increment tenth date
+logic             inc_date_m      ; // increment month
+logic             inc_date_tm     ; // increment tength month
+logic             inc_date_y      ; // increment year
+logic             inc_date_ty     ; // increment tenth year
+logic             inc_date_c      ; // increment century
+logic             inc_date_tc     ; // increment tenth century
 
 // Counters of RTC Time Register
 //

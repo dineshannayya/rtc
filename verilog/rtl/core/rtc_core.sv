@@ -242,7 +242,7 @@ assign inc_date_tc  = rst_date_c;
 // RTC Domain 1 Second Pulse Generation
 //---------------------------------------------
 
-always @(posedge rtc_clk or posedge rst_n)
+always @(posedge rtc_clk or negedge rst_n)
 if (rst_n == 1'b0) begin
 	rtc_div    <= 15'b0;
 	pulse_1s   <= 1'b0;

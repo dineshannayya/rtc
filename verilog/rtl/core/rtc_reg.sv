@@ -363,7 +363,7 @@ begin
                          cfg_alarm2[11:8]  == time_h[3:0] && cfg_alarm2[13:12] == time_tm[1:0] &&
                          cfg_alarm2[15:12] == date_d[3:0] && cfg_alarm2[17:16] == date_td;
 
-   default: alrm1_intr = 0;
+   default: alrm2_intr = 0;
 
    endcase
 
