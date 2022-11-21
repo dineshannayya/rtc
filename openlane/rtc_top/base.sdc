@@ -6,37 +6,49 @@ current_design rtc_top
 ###############################################################################
 # Timing Constraints
 ###############################################################################
-create_clock -name rtc_clk -period 10.0000 [get_ports {rtc_clk}]
-set_clock_transition 0.1500 [get_clocks {rtc_clk}]
-set_clock_uncertainty 0.2500 rtc_clk
-set_propagated_clock [get_clocks {rtc_clk}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_addr[*]}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_be[*]}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_cs}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_wdata[*]}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_wdata[9]}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_wr}]
-set_input_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {rst_n}]
+create_clock -name rtc_clk -period 100.0000 [get_ports {rtc_clk}]
+create_clock -name sys_clk -period 10.0000 [get_ports {sys_clk}]
 
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_addr[*]}]
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_be[*]}]
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_cs}]
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_wdata[*]}]
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_wdata[9]}]
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_wr}]
-set_input_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {rst_n}]
+set_clock_groups \
+   -name clock_group \
+   -logically_exclusive \
+   -group [get_clocks {sys_clk}]\
+   -group [get_clocks {rtc_clk}]\
+   -comment {Async Clock group}
+
+set_propagated_clock [all_clocks]
+set_clock_transition 0.1500 [all_clocks]
+set_clock_uncertainty -setup 0.5000 [all_clocks]
+set_clock_uncertainty -hold 0.2500 [all_clocks]
+
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_addr[*]}]
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_be[*]}]
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_cs}]
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_wdata[*]}]
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_wdata[9]}]
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_wr}]
+set_input_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {rst_n}]
+
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_addr[*]}]
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_be[*]}]
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_cs}]
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_wdata[*]}]
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_wdata[9]}]
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_wr}]
+set_input_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {rst_n}]
 
 
-set_output_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {inc_date_d}]
-set_output_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {inc_time_s}]
-set_output_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_ack}]
-set_output_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_rdata[*]}]
+set_output_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {inc_date_d}]
+set_output_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {inc_time_s}]
+set_output_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_ack}]
+set_output_delay -max 6.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_rdata[*]}]
+
+set_output_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {inc_date_d}]
+set_output_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {inc_time_s}]
+set_output_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_ack}]
+set_output_delay -min 2.0000 -clock [get_clocks {sys_clk}] -add_delay [get_ports {reg_rdata[*]}]
+
 set_output_delay -max 6.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {rtc_intr}]
-
-set_output_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {inc_date_d}]
-set_output_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {inc_time_s}]
-set_output_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_ack}]
-set_output_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {reg_rdata[*]}]
 set_output_delay -min 2.0000 -clock [get_clocks {rtc_clk}] -add_delay [get_ports {rtc_intr}]
 ###############################################################################
 # Environment

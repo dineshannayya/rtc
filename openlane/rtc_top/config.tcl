@@ -27,7 +27,7 @@ set ::env(FP_PDN_CORE_RING) "0"
 
 # Timing configuration
 set ::env(CLOCK_PERIOD) "10"
-set ::env(CLOCK_PORT) "rtc_clk"
+set ::env(CLOCK_PORT) "rtc_clk sys_clk"
 
 set ::env(SYNTH_MAX_FANOUT) 4
 
@@ -44,6 +44,9 @@ set ::env(VERILOG_FILES) "\
         $::env(DESIGN_DIR)/../../verilog/rtl/core/rtc_top.sv \
         $::env(DESIGN_DIR)/../../verilog/rtl/core/rtc_core.sv \
         $::env(DESIGN_DIR)/../../verilog/rtl/core/rtc_reg.sv \
+        $::env(DESIGN_DIR)/../../verilog/rtl/lib/async_reg_bus.sv \
+        $::env(DESIGN_DIR)/../../verilog/rtl/lib/reset_sync.sv \
+        $::env(DESIGN_DIR)/../../verilog/rtl/lib/ctech_cells.sv \
 	"
 
 set ::env(SYNTH_DEFINES) [list SYNTHESIS ]
@@ -63,7 +66,7 @@ set ::env(GND_PIN) [list {vssd1}]
 set ::env(FP_PIN_ORDER_CFG) $::env(DESIGN_DIR)/pin_order.cfg
 
 set ::env(FP_SIZING) absolute
-set ::env(DIE_AREA) "0 0 220 220"
+set ::env(DIE_AREA) "0 0 250 250"
 
 set ::env(GRT_ADJUSTMENT) 0.2
 
@@ -99,7 +102,7 @@ set ::env(DIODE_INSERTION_STRATEGY) 4
 
 
 #LVS Issue - DEF Base looks to having issue
-set ::env(MAGIC_EXT_USE_GDS) {0}
+set ::env(MAGIC_EXT_USE_GDS) {1}
 
 set ::env(GLB_RESIZER_MAX_SLEW_MARGIN) {1.5}
 set ::env(PL_RESIZER_MAX_SLEW_MARGIN) {1.5}
