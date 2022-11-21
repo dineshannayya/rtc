@@ -77,9 +77,8 @@
 ********************************************************************************************/
 
 module rtc_top(
-	// WISHBONE Interface
-	input  logic        rtc_clk, 
     input  logic        rst_n, 
+    input  logic        sys_clk, 
 
 
     input  logic        reg_cs, 
@@ -89,17 +88,37 @@ module rtc_top(
     input  logic        reg_wr, 
 	output logic [31:0] reg_rdata, 
     output logic        reg_ack, 
+
+
+    // RTC clock Domain
+	input  logic        rtc_clk, 
+
+
     output logic        rtc_intr,
 
    // Debug Signals
-   output  logic        inc_time_s,
-   output  logic        inc_date_d
+    output  logic        inc_time_s,
+    output  logic        inc_date_d
 
 );
+
 //--------------------------------------------------
 // Local Wire decleration
 //--------------------------------------------------
-// RTC Core I/f
+//--------------------------------------------------
+// RTC Register I/F
+//--------------------------------------------------
+logic        rtc_reg_cs       ;
+logic [4:0]  rtc_reg_addr     ;
+logic [31:0] rtc_reg_wdata    ;
+logic [3:0]  rtc_reg_be       ;
+logic        rtc_reg_wr       ;
+logic [31:0] rtc_reg_rdata    ;
+logic        rtc_reg_ack      ;
+
+//--------------------------------------------------
+// RTC Core Config I/f
+//--------------------------------------------------
 logic        cfg_rtc_update   ; // Update RTC core time/date with config
 logic        cfg_rtc_capture  ; // Capture RTC core time/date with config
 logic        cfg_rtc_halt     ; // Halt RTC Operation
@@ -152,10 +171,73 @@ logic	[3:0]		date_ty         ;// Ten years counter
 logic	[3:0]		date_c          ;// Centuries counter
 logic	[3:0]		date_tc         ;// Ten centuries counter
 
+logic               rst_sn          ;// Reset sync to sys clk
+logic               rst_rn          ;// Reset sync to rtc clk
+
+/***************************************
+  Reset Sync to System Clock
+***************************************/
+
+reset_sync   u_sync_sclk(
+	  .scan_mode  ( 1'b0    ),
+      .dclk       ( sys_clk ), 
+	  .arst_n     ( rst_n   ), 
+      .srst_n     ( rst_sn  )
+      );
+
+/***************************************
+  Reset Sync to RTC Clock
+***************************************/
+
+reset_sync   u_sync_rclk(
+	  .scan_mode  ( 1'b0    ),
+      .dclk       ( rtc_clk ), 
+	  .arst_n     ( rst_n   ), 
+      .srst_n     ( rst_rn  )
+      );
+
+
+async_reg_bus #(.AW(5), .TIMEOUT_ENB(0)) u_async_reg_bus(
+    // Initiator declartion
+        .in_clk                    (sys_clk    ),
+        .in_reset_n                (rst_sn     ),
+       // Reg Bus Master
+       // outputs
+         .in_reg_rdata             (reg_rdata  ),
+         .in_reg_ack               (reg_ack    ),
+         .in_reg_timeout           (),
+
+       // Inputs
+         .in_reg_cs                (reg_cs     ),
+         .in_reg_addr              (reg_addr   ),
+         .in_reg_wdata             (reg_wdata  ),
+         .in_reg_wr                (reg_wr     ),
+         .in_reg_be                (reg_be     ),
+
+    // Target Declaration
+         .out_clk                  (rtc_clk   ),
+         .out_reset_n              (rst_rn    ) ,
+      // Reg Bus Slave
+      // output
+         .out_reg_cs               (rtc_reg_cs      ),
+         .out_reg_addr             (rtc_reg_addr    ),
+         .out_reg_wdata            (rtc_reg_wdata   ),
+         .out_reg_wr               (rtc_reg_wr      ),
+         .out_reg_be               (rtc_reg_be      ),
+
+      // Inputs
+         .out_reg_rdata            (rtc_reg_rdata   ),
+         .out_reg_ack              (rtc_reg_ack     )
+   );
+
+
+/********************************
+   RTC CORE
+*********************************/
 rtc_core   u_core (
 	// WISHBONE Interface
 	.rtc_clk         (rtc_clk         ), 
-    .rst_n           (rst_n           ), 
+    .rst_n           (rst_rn          ), 
 
     // Counters of RTC Time Register
     //
@@ -212,21 +294,24 @@ rtc_core   u_core (
 
 );
 
+/********************************
+   RTC CORE
+*********************************/
 
 rtc_reg   u_reg(
 	// WISHBONE Interface
 	.rtc_clk         (rtc_clk           ), 
-    .rst_n           (rst_n             ), 
+    .rst_n           (rst_rn            ), 
 
     // Reg I/F
 
-    .reg_cs          (reg_cs            ), 
-    .reg_addr        (reg_addr          ), 
-    .reg_wdata       (reg_wdata         ), 
-    .reg_be          (reg_be            ), 
-    .reg_wr          (reg_wr            ), 
-	.reg_rdata       (reg_rdata         ), 
-    .reg_ack         (reg_ack           ), 
+    .reg_cs          (rtc_reg_cs        ), 
+    .reg_addr        (rtc_reg_addr      ), 
+    .reg_wdata       (rtc_reg_wdata     ), 
+    .reg_be          (rtc_reg_be        ), 
+    .reg_wr          (rtc_reg_wr        ), 
+	.reg_rdata       (rtc_reg_rdata     ), 
+    .reg_ack         (rtc_reg_ack       ), 
     .rtc_intr        (rtc_intr          ),
 
     // Counters of RTC Time Register
@@ -283,8 +368,5 @@ rtc_reg   u_reg(
     .cfg_date        (cfg_date          )
 
 );
-
-
-
 
 endmodule

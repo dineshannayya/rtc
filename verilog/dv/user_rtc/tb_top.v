@@ -27,6 +27,9 @@
   Revision :                                                  
      0.0  - Nov 16, 2022 
             Initial Version 
+     0.1  - Nov 21, 2022 
+            A.Sys-clk and RTC clock domain are seperated.
+            B.Register are moved to seperate module
             
 ************************************************************************************/
 /************************************************************************************
@@ -76,7 +79,9 @@
 module tb_top;
 
 parameter RTC_PERIOD = 30518; // 32768 Hz
+parameter SYS_PERIOD = 10000; // 100Khz
 
+reg		    sys_clk;
 reg		    rtc_clk;
 reg		    rst_n;
 reg         test_fail;
@@ -101,10 +106,12 @@ reg         fast_sim_date;
 // Wishbone Interface
 
 always #(RTC_PERIOD/2) rtc_clk = ~rtc_clk;
+always #(SYS_PERIOD/2) sys_clk = ~sys_clk;
 
 initial
    begin
     test_fail     = 0;
+	sys_clk       = 0;
 	rtc_clk       = 0;
 	rst_n         = 0;
 	error_cnt     = 0;
@@ -127,7 +134,7 @@ initial
     fast_test1;
     fast_test2;
 
-	repeat(1000)	@(posedge rtc_clk);
+	repeat(1000)	@(posedge sys_clk);
 
 	$display("");
 	$display("");
@@ -138,7 +145,7 @@ initial
     end
 	$display("");
 	$display("");
-	repeat(10)	@(posedge rtc_clk);
+	repeat(10)	@(posedge sys_clk);
 	$finish;
 end
 
@@ -152,9 +159,9 @@ end
 task reset;
 begin
 	rst_n         = 0;
-	repeat(4)	@(posedge rtc_clk);
+	repeat(4)	@(posedge sys_clk);
 	rst_n = 1;
-	repeat(20)	@(posedge rtc_clk);
+	repeat(20)	@(posedge sys_clk);
 end
 endtask
 
@@ -318,6 +325,7 @@ rtc_top u_dut (
     .vccd1           (1'b1),    // User area 1 1.8V supply
     .vssd1           (1'b0),    // User area 1 digital ground
 `endif
+    .sys_clk         (sys_clk), 
     .rtc_clk         (rtc_clk), 
     .rst_n           (rst_n), 
 
@@ -335,7 +343,7 @@ rtc_top u_dut (
 
 );
 
-wire clock = rtc_clk;
+wire clock = sys_clk;
 
 //-------------------------------
 // Reg Write

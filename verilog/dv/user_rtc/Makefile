@@ -27,7 +27,10 @@ _TB_=		$(TB_SRC_DIR)/tb_top.v
 DUT_SRC_DIR=../../rtl
 _RTL_TARGETS_=	$(DUT_SRC_DIR)/core/rtc_core.sv \
                 $(DUT_SRC_DIR)/core/rtc_reg.sv  \
-                $(DUT_SRC_DIR)/core/rtc_top.sv			 
+                $(DUT_SRC_DIR)/core/rtc_top.sv   \
+                $(DUT_SRC_DIR)/lib/async_reg_bus.sv \
+                $(DUT_SRC_DIR)/lib/reset_sync.sv	\
+                $(DUT_SRC_DIR)/lib/ctech_cells.sv
 
 GL_SRC_DIR=../../gl
 _GL_TARGETS_= $(GL_SRC_DIR)/rtc_core.v			\
