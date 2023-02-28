@@ -97,8 +97,8 @@ module rtc_top(
     output logic        rtc_intr,
 
    // Debug Signals
-    output  logic        inc_time_s,
-    output  logic        inc_date_d
+    output  logic       inc_time_s,
+    output  logic       inc_date_d
 
 );
 
