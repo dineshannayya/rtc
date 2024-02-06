@@ -138,6 +138,8 @@ module rtc_core(
 logic   [14:0]      rtc_div         ;// rtc clock div
 logic               pulse_1s        ;
 
+logic               rst_time_th     ;
+logic               rst_time_h      ; 
 
 
 // In fast Sim Time Mode, 1second run in RTC_DIV/2
@@ -163,11 +165,11 @@ wire  rst_time_m   = (time_m == 4'd9) & rst_time_ts ;
 wire  rst_time_tm  = (time_tm == 3'd5) & rst_time_m ;  
 
 // Hour Roll over in 12/24 hour mode
-wire  rst_time_h   = (cfg_hmode == 1'b0) ? ((time_th[0]== 1'b1) ? (time_h == 4'd1) & rst_time_tm:(time_h == 4'd9) & rst_time_tm) :
+assign  rst_time_h   = (cfg_hmode == 1'b0) ? ((time_th[0]== 1'b1) ? (time_h == 4'd1) & rst_time_tm:(time_h == 4'd9) & rst_time_tm) :
 		           	                        ((time_th== 2'd2) ? (time_h == 4'd3) & rst_time_tm:(time_h == 4'd9) & rst_time_tm) ;
 
 // Tength Rool Over in 12/24 Hour Mode
-wire  rst_time_th = (cfg_hmode == 1'b0) ? (time_th == 2'd3) & rst_time_h  : (time_th == 2'd2) & rst_time_h  ;
+assign  rst_time_th = (cfg_hmode == 1'b0) ? (time_th == 2'd3) & rst_time_h  : (time_th == 2'd2) & rst_time_h  ;
 
 // Day of Week Roll Over
 wire  rst_time_dow = (time_dow == 3'd7) & rst_time_th ;
